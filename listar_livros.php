@@ -18,6 +18,8 @@ INSERT INTO livro(nome, ano) values
 
  */
 
+file_put_contents('entrada.txt', $_GET['nome'], FILE_APPEND);
+
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=biblioteca;
                        charset=utf8",'root', '');
@@ -25,8 +27,11 @@ try {
     die('Error, não pude conectar: ' . $e->getMessage() . '  <br>  ');
 }
 
-$consulta = $pdo->query('SELECT * FROM livro');
-
+if(isset($_GET['nome'])) {
+    $consulta = $pdo->query('SELECT * FROM livro WHERE nome like "%' . $_GET['nome'] . '%" ');
+} else{
+    $consulta = $pdo->query('SELECT * FROM livro');
+}
 $_Livros = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
 header('Content-Type: application/json; charset=utf-8');
