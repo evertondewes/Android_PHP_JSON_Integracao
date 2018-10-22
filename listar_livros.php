@@ -18,7 +18,7 @@ INSERT INTO livro(nome, ano) values
 
  */
 
-file_put_contents('entrada.txt', $_GET['nome'], FILE_APPEND);
+//file_put_contents('entrada.txt', $_GET['nome'], FILE_APPEND);
 
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=biblioteca;
@@ -27,13 +27,29 @@ try {
     die('Error, não pude conectar: ' . $e->getMessage() . '  <br>  ');
 }
 
-if(isset($_GET['nome'])) {
-    $consulta = $pdo->query('SELECT * FROM livro WHERE nome like "%' . $_GET['nome'] . '%" ');
-} else{
-    $consulta = $pdo->query('SELECT * FROM livro');
-}
-$_Livros = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-header('Content-Type: application/json; charset=utf-8');
-// php -S localhost:80
-echo json_encode($_Livros);
+$metodo =  $_SERVER['REQUEST_METHOD'];
+
+switch ($metodo){
+    case 'GET':
+        if(isset($_GET['nome'])) {
+            $consulta = $pdo->query('SELECT * FROM livro WHERE nome like "%' . $_GET['nome'] . '%" ');
+        } else{
+            $consulta = $pdo->query('SELECT * FROM livro');
+        }
+        $_Livros = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        echo json_encode($_Livros);
+        break;
+
+    case 'POST':
+        $entrada = file_get_contents('php://input');
+        $livro = json_decode($entrada);
+
+        $pdo->query("INSERT INTO livro(nome, ano) values('$livro->nome', $livro->ano); ");
+        break;
+
+}
+
