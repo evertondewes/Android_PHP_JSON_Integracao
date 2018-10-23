@@ -51,5 +51,22 @@ switch ($metodo){
         $pdo->query("INSERT INTO livro(nome, ano) values('$livro->nome', $livro->ano); ");
         break;
 
+    case 'PUT':
+        $entrada = file_get_contents('php://input');
+        $livro = json_decode($entrada);
+
+        $sql = "UPDATE livro SET ano = $livro->ano WHERE nome = '$livro->nome'; ";
+
+        $pdo->query($sql);
+        break;
+
+    case 'DELETE':
+        $entrada = file_get_contents('php://input');
+        $livro = json_decode($entrada);
+
+        $sql = "DELETE FROM livro WHERE nome = '$livro->nome'; ";
+
+        $pdo->query($sql);
+        break;
 }
 
