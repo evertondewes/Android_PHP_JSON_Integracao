@@ -1,6 +1,5 @@
 <?php
 /*
-listar_livros.php
 
 create database controle_clientes;
 
@@ -27,15 +26,15 @@ try {
     switch ($metodo) {
         case 'GET':
             if (isset($_GET['nome'])) {
-                $consulta = $pdo->query('SELECT * FROM livro WHERE nome like "%' . $_GET['nome'] . '%" ');
+                $consulta = $pdo->query('SELECT * FROM cliente WHERE nome like "%' . $_GET['nome'] . '%" ');
             } else {
-                $consulta = $pdo->query('SELECT * FROM livro');
+                $consulta = $pdo->query('SELECT * FROM cliente');
             }
-            $_Livros = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
             header('Content-Type: application/json; charset=utf-8');
 
-            echo json_encode($_Livros);
+            echo json_encode($clientes);
             break;
 
         case 'POST':
@@ -47,20 +46,28 @@ try {
 
         case 'PUT':
             $entrada = file_get_contents('php://input');
-            $livro = json_decode($entrada);
+            $cliente = json_decode($entrada);
 
-            $sql = "UPDATE livro SET ano = $livro->ano WHERE nome = '$livro->nome'; ";
+            $sql = "UPDATE cliente SET nome = '$cliente->nome', rua = '$cliente->rua', numero = $cliente->numero, bairro = '$cliente->bairro'  WHERE id = $cliente->id; ";
 
             $pdo->query($sql);
             break;
 
         case 'DELETE':
             $entrada = file_get_contents('php://input');
-            $livro = json_decode($entrada);
+            $cliente = json_decode($entrada);
 
-            $sql = "DELETE FROM livro WHERE nome = '$livro->nome'; ";
+            $sql = "DELETE FROM cliente WHERE id = '$cliente->id'; ";
 
             $pdo->query($sql);
+
+            $consulta = $pdo->query('SELECT * FROM cliente');
+
+            $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+            header('Content-Type: application/json; charset=utf-8');
+
+            echo json_encode($clientes);
             break;
     }
 
